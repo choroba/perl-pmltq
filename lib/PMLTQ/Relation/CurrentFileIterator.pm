@@ -36,7 +36,7 @@ sub _next_file {
         $self->[FILE]=$f;
         $self->[TREE_NO]=0;
         my $n = $self->[NODE] = $f->tree(0);
-        return ($n && $self->[CONDITIONS]->($n,$f)) ? $n : ($n && $self->next)
+        return $n
       }
     }
   }
@@ -46,7 +46,10 @@ sub start  {
   my ($self)=@_;
   $self->[TREE_NO]=0;
   $self->[FILE_QUEUE] = [ TredMacro::CurrentFile() ];
-  return $self->_next_file();
+  my $n = $self->_next_file;
+  return unless $n;
+
+  return $self->[CONDITIONS]->($n, $self->[FILE]) ? $n : $self->next
 }
 sub next {
   my ($self)=@_;
